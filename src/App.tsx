@@ -43,7 +43,11 @@ import {
 
 import './App.css'
 
-function App() {
+import * as ReactDOM from 'react-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+
+//Start of APP
+function Reactle() {
   const prefersDarkMode = window.matchMedia(
     '(prefers-color-scheme: dark)'
   ).matches
@@ -306,4 +310,36 @@ function App() {
   )
 }
 
-export default App
+function Page1() {
+  return <h2>Page 1 routes</h2>
+}
+
+function Page2() {
+  return (
+    <div>
+      <main>
+        <h2>Welcome to the homepage!</h2>
+        <p>You can do this, I believe in you.</p>
+      </main>
+      <nav>
+        <Link to="/">Reactle</Link>
+        <Link to="/page1">Page 1</Link>
+      </nav>
+    </div>
+  )
+}
+
+//AppRouter
+function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Reactle />} />
+        <Route path="/page1" element={<Page1 />} />
+        <Route path="/page2" element={<Page2 />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default AppRouter
