@@ -1,6 +1,6 @@
 export const ANGRYWORDS = [
-  "livid",
-  "angry"
+  'shaniceee',
+  'abigaillll'
 ]
 
 export const WORDS = [

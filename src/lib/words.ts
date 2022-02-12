@@ -49,7 +49,7 @@ export const getWordOfDay = () => {
 
   return {
     // solution: ANGRYWORDS[index % ANGRYWORDS.length].toUpperCase(),
-    solution: ANGRYWORDS[1].toUpperCase(),
+    solution: ANGRYWORDS[4].toUpperCase(),
     solutionIndex: index,
     tomorrow: nextday,
   }
