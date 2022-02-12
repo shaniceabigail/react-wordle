@@ -1,10 +1,10 @@
-import { WORDS } from '../constants/wordlist'
+import { ANGRYWORDS, WORDS } from '../constants/wordlist'
 import { VALID_GUESSES } from '../constants/validGuesses'
 import { getGuessStatuses } from './statuses'
 
 export const isWordInWordList = (word: string) => {
   return (
-    WORDS.includes(word.toLowerCase()) ||
+    ANGRYWORDS.includes(word.toLowerCase()) ||
     VALID_GUESSES.includes(word.toLowerCase())
   )
 }
@@ -48,7 +48,8 @@ export const getWordOfDay = () => {
   const nextday = (index + 1) * msInDay + epochMs
 
   return {
-    solution: WORDS[index % WORDS.length].toUpperCase(),
+    // solution: ANGRYWORDS[index % ANGRYWORDS.length].toUpperCase(),
+    solution: ANGRYWORDS[1].toUpperCase(),
     solutionIndex: index,
     tomorrow: nextday,
   }

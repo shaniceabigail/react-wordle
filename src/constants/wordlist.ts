@@ -1,3 +1,8 @@
+export const ANGRYWORDS = [
+  "livid",
+  "angry"
+]
+
 export const WORDS = [
   'which',
   'there',
