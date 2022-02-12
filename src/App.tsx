@@ -34,6 +34,10 @@ import {
   isWinningWord,
   solution,
   findFirstUnusedReveal,
+  isWordInAngryWordList,
+  isAngryWinningWord,
+  angrysolution,
+  findFirstUnusedRevealAngry,
 } from './lib/words'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
 import {
@@ -43,11 +47,279 @@ import {
 
 import './App.css'
 
+//routing imports
 import * as ReactDOM from 'react-dom'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 
-//Start of APP
-function Reactle() {
+//navigation bar imports
+import NavbarScroller from './components/navigation/NavbarScroller'
+import 'reset-css'
+
+//Original App
+// function Reactle() {
+//   const prefersDarkMode = window.matchMedia(
+//     '(prefers-color-scheme: dark)'
+//   ).matches
+
+//   const [currentGuess, setCurrentGuess] = useState('')
+//   const [isGameWon, setIsGameWon] = useState(false)
+//   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
+//   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+//   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
+//   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+//   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
+//   const [isGameLost, setIsGameLost] = useState(false)
+//   const [isDarkMode, setIsDarkMode] = useState(
+//     localStorage.getItem('theme')
+//       ? localStorage.getItem('theme') === 'dark'
+//       : prefersDarkMode
+//       ? true
+//       : false
+//   )
+//   const [successAlert, setSuccessAlert] = useState('')
+//   const [isRevealing, setIsRevealing] = useState(false)
+//   const [guesses, setGuesses] = useState<string[]>(() => {
+//     const loaded = loadGameStateFromLocalStorage()
+//     if (loaded?.solution !== solution) {
+//       return []
+//     }
+//     const gameWasWon = loaded.guesses.includes(solution)
+//     if (gameWasWon) {
+//       setIsGameWon(true)
+//     }
+//     if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
+//       setIsGameLost(true)
+//     }
+//     return loaded.guesses
+//   })
+
+//   const [stats, setStats] = useState(() => loadStats())
+
+//   const [isHardMode, setIsHardMode] = useState(
+//     localStorage.getItem('gameMode')
+//       ? localStorage.getItem('gameMode') === 'hard'
+//       : false
+//   )
+
+//   const [isMissingPreviousLetters, setIsMissingPreviousLetters] =
+//     useState(false)
+//   const [missingLetterMessage, setIsMissingLetterMessage] = useState('')
+
+//   useEffect(() => {
+//     if (isDarkMode) {
+//       document.documentElement.classList.add('dark')
+//     } else {
+//       document.documentElement.classList.remove('dark')
+//     }
+//   }, [isDarkMode])
+
+//   const handleDarkMode = (isDark: boolean) => {
+//     setIsDarkMode(isDark)
+//     localStorage.setItem('theme', isDark ? 'dark' : 'light')
+//   }
+
+//   const handleHardMode = (isHard: boolean) => {
+//     setIsHardMode(isHard)
+//     localStorage.setItem('gameMode', isHard ? 'hard' : 'normal')
+//   }
+
+//   useEffect(() => {
+//     saveGameStateToLocalStorage({ guesses, solution , angrysolution})
+//   }, [guesses])
+
+//   useEffect(() => {
+//     if (isGameWon) {
+//       setTimeout(() => {
+//         setSuccessAlert(
+//           WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+//         )
+
+//         setTimeout(() => {
+//           setSuccessAlert('')
+//           setIsStatsModalOpen(true)
+//         }, ALERT_TIME_MS)
+//       }, REVEAL_TIME_MS * MAX_WORD_LENGTH)
+//     }
+//     if (isGameLost) {
+//       setTimeout(() => {
+//         setIsStatsModalOpen(true)
+//       }, GAME_LOST_INFO_DELAY)
+//     }
+//   }, [isGameWon, isGameLost])
+
+//   const onChar = (value: string) => {
+//     if (
+//       currentGuess.length < MAX_WORD_LENGTH &&
+//       guesses.length < MAX_CHALLENGES &&
+//       !isGameWon
+//     ) {
+//       setCurrentGuess(`${currentGuess}${value}`)
+//     }
+//   }
+
+//   const onDelete = () => {
+//     setCurrentGuess(currentGuess.slice(0, -1))
+//   }
+
+//   const onEnter = () => {
+//     if (isGameWon || isGameLost) {
+//       return
+//     }
+//     if (!(currentGuess.length === MAX_WORD_LENGTH)) {
+//       setIsNotEnoughLetters(true)
+//       return setTimeout(() => {
+//         setIsNotEnoughLetters(false)
+//       }, ALERT_TIME_MS)
+//     }
+
+//     if (!isWordInWordList(currentGuess)) {
+//       setIsWordNotFoundAlertOpen(true)
+//       return setTimeout(() => {
+//         setIsWordNotFoundAlertOpen(false)
+//       }, ALERT_TIME_MS)
+//     }
+
+//     // enforce hard mode - all guesses must contain all previously revealed letters
+//     if (isHardMode) {
+//       const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
+//       if (firstMissingReveal) {
+//         setIsMissingLetterMessage(firstMissingReveal)
+//         setIsMissingPreviousLetters(true)
+//         return setTimeout(() => {
+//           setIsMissingPreviousLetters(false)
+//         }, ALERT_TIME_MS)
+//       }
+//     }
+
+//     setIsRevealing(true)
+//     // turn this back off after all
+//     // chars have been revealed
+//     setTimeout(() => {
+//       setIsRevealing(false)
+//     }, REVEAL_TIME_MS * MAX_WORD_LENGTH)
+
+//     const winningWord = isWinningWord(currentGuess)
+
+//     if (
+//       currentGuess.length === MAX_WORD_LENGTH &&
+//       guesses.length < MAX_CHALLENGES &&
+//       !isGameWon
+//     ) {
+//       setGuesses([...guesses, currentGuess])
+//       setCurrentGuess('')
+
+//       if (winningWord) {
+//         setStats(addStatsForCompletedGame(stats, guesses.length))
+//         return setIsGameWon(true)
+//       }
+
+//       if (guesses.length === MAX_CHALLENGES - 1) {
+//         setStats(addStatsForCompletedGame(stats, guesses.length + 1))
+//         setIsGameLost(true)
+//       }
+//     }
+//   }
+
+//   return (
+//     <div className="pt-2 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
+//       <div className="flex w-80 mx-auto items-center mb-8 mt-20">
+//         <h1 className="text-xl ml-2.5 grow font-bold dark:text-white">
+//           {GAME_TITLE}
+//         </h1>
+//         {isHardMode ? (
+//           <AcademicCapIcon
+//             className="h-6 w-6 mr-2 cursor-pointer dark:stroke-white"
+//             onClick={() => handleHardMode(!isHardMode)}
+//           />
+//         ) : (
+//           <CakeIcon
+//             className="h-6 w-6 mr-2 cursor-pointer dark:stroke-white"
+//             onClick={() => handleHardMode(!isHardMode)}
+//           />
+//         )}
+//         {isDarkMode ? (
+//           <SunIcon
+//             className="h-6 w-6 mr-2 cursor-pointer dark:stroke-white sun"
+//             onClick={() => handleDarkMode(!isDarkMode)}
+//           />
+//         ) : (
+//           <MoonIcon
+//             className="h-6 w-6 mr-2 cursor-pointer theme-switcher moon"
+//             onClick={() => handleDarkMode(!isDarkMode)}
+//           />
+//         )}
+//         <InformationCircleIcon
+//           className="h-6 w-6 mr-2 cursor-pointer dark:stroke-white"
+//           onClick={() => setIsInfoModalOpen(true)}
+//         />
+//         <ChartBarIcon
+//           className="h-6 w-6 mr-3 cursor-pointer dark:stroke-white"
+//           onClick={() => setIsStatsModalOpen(true)}
+//         />
+//       </div>
+//       <Grid
+//         guesses={guesses}
+//         currentGuess={currentGuess}
+//         isRevealing={isRevealing}
+//       />
+//       <Keyboard
+//         onChar={onChar}
+//         onDelete={onDelete}
+//         onEnter={onEnter}
+//         guesses={guesses}
+//         isRevealing={isRevealing}
+//       />
+//       <InfoModal
+//         isOpen={isInfoModalOpen}
+//         handleClose={() => setIsInfoModalOpen(false)}
+//       />
+//       <StatsModal
+//         isOpen={isStatsModalOpen}
+//         handleClose={() => setIsStatsModalOpen(false)}
+//         guesses={guesses}
+//         gameStats={stats}
+//         isGameLost={isGameLost}
+//         isGameWon={isGameWon}
+//         handleShare={() => {
+//           setSuccessAlert(GAME_COPIED_MESSAGE)
+//           return setTimeout(() => setSuccessAlert(''), ALERT_TIME_MS)
+//         }}
+//         isHardMode={isHardMode}
+//       />
+//       <AboutModal
+//         isOpen={isAboutModalOpen}
+//         handleClose={() => setIsAboutModalOpen(false)}
+//       />
+
+//       <button
+//         type="button"
+//         className="mx-auto mt-8 flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 select-none"
+//         onClick={() => setIsAboutModalOpen(true)}
+//       >
+//         {ABOUT_GAME_MESSAGE}
+//       </button>
+
+//       <Alert message={NOT_ENOUGH_LETTERS_MESSAGE} isOpen={isNotEnoughLetters} />
+//       <Alert
+//         message={WORD_NOT_FOUND_MESSAGE}
+//         isOpen={isWordNotFoundAlertOpen}
+//       />
+//       <Alert message={missingLetterMessage} isOpen={isMissingPreviousLetters} />
+//       <Alert
+//         message={CORRECT_WORD_MESSAGE(solution)}
+//         isOpen={isGameLost && !isRevealing}
+//       />
+//       <Alert
+//         message={successAlert}
+//         isOpen={successAlert !== ''}
+//         variant="success"
+//         topMost={true}
+//       />
+//     </div>
+//   )
+// }
+
+function Angerdle() {
   const prefersDarkMode = window.matchMedia(
     '(prefers-color-scheme: dark)'
   ).matches
@@ -71,10 +343,10 @@ function Reactle() {
   const [isRevealing, setIsRevealing] = useState(false)
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
-    if (loaded?.solution !== solution) {
+    if (loaded?.angrysolution !== angrysolution) {
       return []
     }
-    const gameWasWon = loaded.guesses.includes(solution)
+    const gameWasWon = loaded.guesses.includes(angrysolution)
     if (gameWasWon) {
       setIsGameWon(true)
     }
@@ -115,7 +387,7 @@ function Reactle() {
   }
 
   useEffect(() => {
-    saveGameStateToLocalStorage({ guesses, solution })
+    saveGameStateToLocalStorage({ guesses, solution, angrysolution })
   }, [guesses])
 
   useEffect(() => {
@@ -163,7 +435,7 @@ function Reactle() {
       }, ALERT_TIME_MS)
     }
 
-    if (!isWordInWordList(currentGuess)) {
+    if (!isWordInAngryWordList(currentGuess)) {
       setIsWordNotFoundAlertOpen(true)
       return setTimeout(() => {
         setIsWordNotFoundAlertOpen(false)
@@ -172,7 +444,10 @@ function Reactle() {
 
     // enforce hard mode - all guesses must contain all previously revealed letters
     if (isHardMode) {
-      const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
+      const firstMissingReveal = findFirstUnusedRevealAngry(
+        currentGuess,
+        guesses
+      )
       if (firstMissingReveal) {
         setIsMissingLetterMessage(firstMissingReveal)
         setIsMissingPreviousLetters(true)
@@ -189,7 +464,7 @@ function Reactle() {
       setIsRevealing(false)
     }, REVEAL_TIME_MS * MAX_WORD_LENGTH)
 
-    const winningWord = isWinningWord(currentGuess)
+    const winningWord = isAngryWinningWord(currentGuess)
 
     if (
       currentGuess.length === MAX_WORD_LENGTH &&
@@ -297,7 +572,7 @@ function Reactle() {
       />
       <Alert message={missingLetterMessage} isOpen={isMissingPreviousLetters} />
       <Alert
-        message={CORRECT_WORD_MESSAGE(solution)}
+        message={CORRECT_WORD_MESSAGE(angrysolution)}
         isOpen={isGameLost && !isRevealing}
       />
       <Alert
@@ -310,33 +585,36 @@ function Reactle() {
   )
 }
 
-function Page1() {
-  return <h2>Page 1 routes</h2>
-}
-
-function Page2() {
+function Home() {
   return (
     <div>
+      <NavbarScroller />
       <main>
         <h2>Welcome to the homepage!</h2>
         <p>You can do this, I believe in you.</p>
       </main>
-      <nav>
-        <Link to="/">Reactle</Link>
-        <Link to="/page1">Page 1</Link>
-      </nav>
     </div>
   )
 }
 
+const navigation = {
+  brand: { name: 'NavbarScroller', to: '/' },
+  links: [
+    { name: 'Reactle', to: '/reactle' },
+    { name: 'Page 1', to: '/page1' },
+  ],
+}
+
 //AppRouter
 function AppRouter() {
+  const { brand, links } = navigation
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Reactle />} />
-        <Route path="/page1" element={<Page1 />} />
-        <Route path="/page2" element={<Page2 />} />
+        {/* <Route path="/reactle" element={<Reactle />} /> */}
+        <Route path="/angerdle" element={<Angerdle />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
   )

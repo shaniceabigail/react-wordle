@@ -1,6 +1,7 @@
-import { WORDS } from '../constants/wordlist'
+import { WORDS, ANGRYWORDS } from '../constants/wordlist'
 import { VALID_GUESSES } from '../constants/validGuesses'
 import { getGuessStatuses } from './statuses'
+import { arrayBuffer } from 'stream/consumers'
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -53,5 +54,48 @@ export const getWordOfDay = () => {
     tomorrow: nextday,
   }
 }
+// Angry Game Logic
+export const getAngryWordOfDay = () => {
+  return {
+    angrysolution:  ANGRYWORDS[1]
+  }
+}
+
+export const isWordInAngryWordList = (word: string) => {
+  return (
+    ANGRYWORDS.includes(word.toLowerCase()) ||
+    VALID_GUESSES.includes(word.toLowerCase())
+  )
+}
+
+export const isAngryWinningWord = (word: string) => {
+  return angrysolution === word
+}
+
+export const findFirstUnusedRevealAngry = (word: string, guesses: string[]) => {
+  const knownLetterSet = new Set<string>()
+  for (const guess of guesses) {
+    const statuses = getGuessStatuses(guess)
+
+    for (let i = 0; i < guess.length; i++) {
+      if (statuses[i] === 'correct' || statuses[i] === 'present') {
+        knownLetterSet.add(guess[i])
+      }
+      if (statuses[i] === 'correct' && word[i] !== guess[i]) {
+        return `Must use ${guess[i]} in position ${i + 1}`
+      }
+    }
+  }
+
+  for (const letter of Array.from(knownLetterSet.values())) {
+    // fail fast, always return first failed letter if applicable
+    if (!word.includes(letter)) {
+      return `Guess must contain ${letter}`
+    }
+  }
+  return false
+}
+
+export const { angrysolution } = getAngryWordOfDay()
 
 export const { solution, solutionIndex, tomorrow } = getWordOfDay()
